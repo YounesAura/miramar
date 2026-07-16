@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adem kfatt</title>
+    <!-- استدعاء مكتبة Font Awesome الرسمية لعرض أيقونات السوشيال ميديا بدقة عالية -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- استدعاء خط Orbitron الاحترافي لاسم YOXX والنافذة الترحيبية -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght=700;900&display=swap" rel="stylesheet">
+    <style>
+        /* إعدادات الخطوط والألوان العامة */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #1a0505; /* لون خلفية احتياطي داكن يميل للاحمرار */
+            color: #f8fafc; /* لون نص فاتح */
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            overflow: hidden; /* لمنع التمرير أثناء ظهور شاشة الدخول */
+            position: relative;
+        }
+
+        /* 🎬 كود جعل الفيديو خلفية متحركة */
+        .bg-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* يضمن ملء الفيديو للشاشة بالكامل دون تشويه */
+            z-index: 1; /* تبقى خلف جميع البطاقات والإطارات */
+            pointer-events: none; /* لمنع الفيديو من التداخل مع الضغطات */
+        }
+
+        /* شاشة الدخول المضببة الفخمة */
+        .welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(26, 5, 5, 0.7); /* طبقة داكنة حمراء شفافة */
+            backdrop-filter: blur(28px); /* تأثير التضبيب القوي والمحترف */
+            -webkit-backdrop-filter: blur(28px);
+            z-index: 9999; /* تظهر فوق كل شيء */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: opacity 0.8s ease, visibility 0.8s ease; /* تأثير الاختفاء الناعم */
+        }
+
+        /* نص "اضغط في أي مكان" المضيء والنبّاض بخط Orbitron باللون الأحمر */
+        .welcome-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.6), 0 0 40px rgba(239, 68, 68, 0.3);
+            animation: pulseGlow 2s infinite ease-in-out;
+            padding: 20px;
+            user-select: none;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.8;
+                text-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+                text-shadow: 0 0 30px #ef4444, 0 0 50px #ff0055;
+            }
+        }
+
+        /* كلاس لإخفاء الشاشة الترحيبية بعد الضغط */
+        .welcome-overlay.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* 1. إطار مستقل للملف الشخصي في (أعلى اليمين) باللون الأحمر */
+        .header-profile-card {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px 20px; 
+            background-color: rgba(30, 10, 10, 0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+            border-radius: 12px;
+            align-self: flex-start; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            z-index: 10; /* فوق الفيديو */
+        }
+
+        .header-profile-card:hover {
+            border-color: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.15);
+        }
+
+        .header-img {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .header-profile-card:hover .header-img {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .header-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #f8fafc;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        .header-profile-card:hover .header-name {
+            color: #ef4444;
+            text-shadow: 0 0 8px #ef4444;
+        }
+
+        /* Container لتوسيط الإطار الأوسط في الشاشة */
+        .card-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            z-index: 10; /* فوق الفيديو */
+        }
+
+        /* 2. الإطار الرئيسي الكبير في وسط الشاشة باللون الأحمر */
+        .main-card {
+            width: 100%;
+            max-width: 750px; 
+            min-height: 420px; 
+            /* تم ربط الشفافية، التضبيب، والحدود بمتغيرات CSS ليتم التحكم بها ديناميكياً */
+            background-color: rgba(30, 10, 10, var(--card-opacity, 0.45));
+            backdrop-filter: blur(calc(12px * var(--card-blur-ratio, 1)));
+            -webkit-backdrop-filter: blur(calc(12px * var(--card-blur-ratio, 1)));
+            border: 1px solid rgba(239, 68, 68, calc(0.2 * var(--card-border-ratio, 1)));
+            border-radius: 28px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, calc(0.5 * var(--card-shadow-ratio, 1)));
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative; 
+            margin-top: 50px; 
+            transition: border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .main-card:hover {
+            border-color: rgba(239, 68, 68, calc(0.4 * var(--card-border-ratio, 1)));
+            box-shadow: 0 0 30px rgba(239, 68, 68, calc(0.15 * var(--card-border-ratio, 1))), 
+                        0 15px 50px rgba(0, 0, 0, calc(0.6 * var(--card-shadow-ratio, 1)));
+        }
+
+        /* الجزء العلوي المحتوي على الصورة الكبيرة والاسم */
+        .card-top {
+            position: absolute;
+            left: 25px;      
+            top: 15px;      
+            display: flex;
+            flex-direction: row-reverse; 
+            align-items: center;
+            gap: 20px;       
+        }
+
+        /* تأثير حلقة الألوان المضيئة التي تدور حول الصورة (درجات الأحمر والوردي الفخم) */
+        .avatar-glow-wrapper {
+            position: relative;
+            width: 140px;   
+            height: 140px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .avatar-glow-wrapper::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: conic-gradient(#ef4444, #ff0055, #991b1b, #ef4444);
+            animation: rotateGlow 4s linear infinite; 
+        }
+
+        .avatar-glow-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: 5px; 
+            background: #110303;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        @keyframes rotateGlow {
+            100% { transform: rotate(360deg); }
+        }
+
+        .profile-img-large {
+            width: calc(100% - 10px);
+            height: calc(100% - 10px);
+            border-radius: 50%;
+            object-fit: cover;
+            z-index: 2; 
+            transition: transform 0.4s ease;
+        }
+
+        .main-card:hover .profile-img-large {
+            transform: scale(1.05);
+        }
+
+        /* أنيميشن كتابة اسمك الجديد باللون الأحمر */
+        .profile-name-new {
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 28px; 
+            font-weight: 900;
+            color: #f8fafc;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+            white-space: nowrap;
+            margin-bottom: -15px; 
+            
+            display: inline-block;
+            overflow: hidden; 
+            border-right: 3px solid #ef4444; 
+            direction: ltr; 
+            width: 0;
+            /* 14 خطوة للحروف الـ 14 */
+            animation: 
+                typing 7s steps(14, end) infinite, 
+                blink-caret 0.75s step-end infinite; 
+        }
+
+        @keyframes typing {
+            0% { width: 0; }
+            40% { width: 14ch; }  
+            60% { width: 14ch; }  
+            90% { width: 0; }     
+            100% { width: 0; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #ef4444; }
+        }
+
+        .main-card:hover .profile-name-new {
+            color: #ef4444;
+            text-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+        }
+
+        /* 👑 النص الترحيبي في وسط المستطيل الأوسط مع توهج أحمر */
+        .card-center-welcome {
+            text-align: center;
+            margin-top: 130px; /* تباعد ممتاز ليأتي تحت الصورة الشخصية تماماً */
+            margin-bottom: 30px;
+            /* ربط شفافية النص بشريط الشفافية ليختفي أو يظهر بنعومة */
+            opacity: var(--welcome-text-opacity, 1);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .welcome-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.4), 
+                         0 0 20px rgba(255, 0, 85, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            animation: textFloat 3s ease-in-out infinite;
+        }
+
+        /* 🥪 تنسيق فخم ومتوهج لجملة كاسكروط باطيمات */
+        .batimat-subtitle {
+            font-size: 21px;
+            font-weight: bold;
+            color: #ffaa00; /* لون ذهبي ناري مميز للكاسكروط */
+            text-shadow: 0 0 10px rgba(255, 170, 0, 0.6), 0 0 20px rgba(239, 68, 68, 0.4);
+            margin-top: 15px;
+            display: block;
+            animation: textFloat 3s ease-in-out infinite;
+            animation-delay: 0.3s; /* لتتحرك بشكل متناسق ومختلف قليلاً عن العنوان */
+        }
+
+        /* أنيميشن حركة عائمة خفيفة */
+        @keyframes textFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        /* قسم الأيقونات أسفل الإطار الكبير */
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 35px;
+            width: 100%;
+            padding-top: 25px;
+            border-top: 1px solid rgba(248, 250, 252, 0.08);
+            margin-top: auto; 
+        }
+
+        .icon-link {
+            color: #94a3b8;
+            font-size: 32px;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        color 0.3s ease, 
+                        filter 0.3s ease;
+            text-decoration: none;
+        }
+
+        .icon-link:hover {
+            transform: translateY(-5px) scale(1.2);
+        }
+
+        .icon-link.instagram:hover {
+            color: #ff0055;
+            filter: drop-shadow(0 0 8px #ff0055);
+        }
+
+        .icon-link.discord:hover {
+            color: #ef4444;
+            filter: drop-shadow(0 0 8px #ef4444);
+        }
+
+        .icon-link.tiktok:hover {
+            color: #ff3366;
+            filter: drop-shadow(0 0 8px #ff3366);
+        }
+
+        /* 🎛️ تصميم لوحة أزرار التحكم الزجاجية الفخمة باللون الأحمر */
+        .controls-panel {
+            position: fixed;
+            bottom: 25px;
+            left: 25px; /* موضوعة بشكل رائع في الركن السفلي */
+            background: rgba(30, 10, 10, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 15px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            width: 220px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-label i {
+            color: #ef4444;
+            font-size: 14px;
+        }
+
+        /* تخصيص مظهر شريط السحب الأحمر (Slider) */
+        .custom-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(248, 250, 252, 0.1);
+            border-radius: 3px;
+            outline: none;
+            transition: background 0.3s;
+        }
+
+        .custom-slider:hover {
+            background: rgba(248, 250, 252, 0.2);
+        }
+
+        .custom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ef4444;
+            cursor: pointer;
+            box-shadow: 0 0 8px #ef4444;
+            transition: transform 0.1s;
+        }
+
+        .custom-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🎬 فيديو الخلفية المتحركة -->
+    <video class="bg-video" id="backgroundVideo" src="background.mp4" loop muted playsinline></video>
+
+    <!-- 🔊 عنصر تشغيل الصوت المخفي في الخلفية -->
+    <audio id="bgMusic" src="øneheart x reidenshi - snowfall.mp3" loop></audio>
+
+    <!-- واجهة الترحيب المضببة -->
+    <div class="welcome-overlay" id="welcomeOverlay">
+        <div class="welcome-text">CliCk here to see the motion baby..</div>
+    </div>
+
+    <!-- 1. إطار الملف الشخصي الأنيق المستقل (أعلى اليمين) -->
+    <div class="header-profile-card">
+        <img src="هه.png" alt="الصورة الشخصية" class="header-img">
+        <span class="header-name">Adem 3amk</span>
+    </div>
+
+    <!-- منطقة وسط الشاشة المحتوية على الإطار الكبير -->
+    <div class="card-container">
+        <!-- 2. الإطار الرئيسي الكبير -->
+        <div class="main-card" id="mainCard">
+            
+            <!-- القسم العلوي: الصورة والاسم المكتوب بخط Orbitron والأنيميشن -->
+            <div class="card-top">
+                <div class="avatar-glow-wrapper">
+                    <img src="هه.png" alt="الصورة الشخصية" class="profile-img-large">
+                </div>
+                <span class="profile-name-new">Adem 3amk</span>
+            </div>
+
+            <!-- 👑 النص الترحيبي الجديد في وسط المستطيل ومعه كاسكروط باطيمات -->
+            <div class="card-center-welcome" id="cardWelcome">
+                <h2 class="welcome-title">
+              👑🔥✨ WELCOME TO Adem AURA 
+                </h2>
+                <span class="batimat-subtitle">🥪 كاسكروط باطيمات 😂😂</span>
+            </div>
+
+            <!-- القسم السفلي داخل الإطار الكبير (أيقونات التواصل الاجتماعي) -->
+            <div class="social-icons">
+                <a href="https://www.instagram.com/x_adem_19_x9/" class="icon-link instagram" target="_blank" title="إنستغرام">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                
+                <a href="https://discord.gg/gU7xYh6Hbd" class="icon-link discord" target="_blank" title="ديسكورد">
+                    <i class="fab fa-discord"></i>
+                </a>
+                
+                <a href="https://www.tiktok.com/@x__adem__x998" class="icon-link tiktok" target="_blank" title="تيك توك">
+                    <i class="fab fa-tiktok"></i>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 🎛️ لوحة أزرار التحكم في الصوت والشفافية -->
+    <div class="controls-panel">
+        <!-- التحكم في الصوت -->
+        <div class="control-group">
+            <span class="control-label">
+                <i class="fas fa-volume-up" id="volumeIcon"></i>
+                حجم الصوت
+            </span>
+            <input type="range" id="volumeSlider" class="custom-slider" min="0" max="1" step="0.05" value="1">
+        </div>
+        
+        <!-- التحكم في شفافية المستطيل -->
+        <div class="control-group">
+            <span class="control-label">
+                <i class="fas fa-eye"></i>
+                شفافية الإطار الأوسط
+            </span>
+            <input type="range" id="opacitySlider" class="custom-slider" min="0" max="0.45" step="0.01" value="0.45">
+        </div>
+    </div>
+
+    <!-- كود الجافا سكريبت الكامل لتفعيل إخفاء الضباب وتشغيل الموسيقى والفيديو والتحكمات -->
+    <script>
+        const overlay = document.getElementById('welcomeOverlay');
+        const music = document.getElementById('bgMusic');
+        const video = document.getElementById('backgroundVideo');
+        const mainCard = document.getElementById('mainCard');
+        const cardWelcome = document.getElementById('cardWelcome');
+        
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeIcon = document.getElementById('volumeIcon');
+        const opacitySlider = document.getElementById('opacitySlider');
+        
+        // عند الضغط على الشاشة الترحيبية
+        overlay.addEventListener('click', () => {
+            // 1. إخفاء الشاشة الترحيبية بتأثير تدريجي ناعم
+            overlay.classList.add('fade-out'); 
+            document.body.style.overflow = 'auto'; // السماح بالتمرير إن وجد
+            
+            // 2. تشغيل الفيديو في الخلفية برمجياً فور الضغط
+            if (video) {
+                video.play().catch(error => {
+                    console.log("تعذر تشغيل الفيديو تلقائياً:", error);
+                });
+            }
+            
+            // 3. تشغيل الأغنية بالخلفية
+            if (music) {
+                music.play().catch(error => {
+                    console.log("تفعيل الأغنية يتطلب تفاعلاً مباشراً:", error);
+                });
+            }
+        });
+
+        // 🔊 التحكم في حجم الصوت برمجياً عبر السلايدر
+        volumeSlider.addEventListener('input', (e) => {
+            const vol = e.target.value;
+            if (music) {
+                music.volume = vol;
+            }
+            // تغيير أيقونة الصوت بناءً على النسبة
+            if (vol == 0) {
+                volumeIcon.className = "fas fa-volume-mute";
+            } else if (vol < 0.5) {
+                volumeIcon.className = "fas fa-volume-down";
+            } else {
+                volumeIcon.className = "fas fa-volume-up";
+            }
+        });
+
+        // 🌫️ التحكم في شفافية خلفية المستطيل الأوسط فقط دون التأثير على محتوياته
+        opacitySlider.addEventListener('input', (e) => {
+            const opacityVal = e.target.value;
+            
+            // نحسب نسبة التدرج لتقليل الحدود، التضبيب، والظلال تدريجياً بالتزامن مع الخلفية
+            const ratio = opacityVal / 0.45;
+
+            mainCard.style.setProperty('--card-opacity', opacityVal);
+            mainCard.style.setProperty('--card-blur-ratio', ratio);
+            mainCard.style.setProperty('--card-border-ratio', ratio);
+            mainCard.style.setProperty('--card-shadow-ratio', ratio);
+
+            // نخفض شفافية النص الترحيبي تدريجياً بالتناسب مع السلايدر ليكون المشهد انسيابياً ومحترفاً
+            const textOpacity = 0.4 + (ratio * 0.6); // لا يختفي تماماً بل يبقى بوضوح 40% كحد أدنى كمنظر جمالي
+            cardWelcome.style.setProperty('--welcome-text-opacity', textOpacity);
+        });
+    </script>
+
+</body>
+</html>
